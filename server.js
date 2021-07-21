@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const generateUniqueId = require('generate-unique-id');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 const path = require('path');
 
 // Sets up the Express app to handle data parsing
@@ -19,7 +19,7 @@ app.use(express.static('public'));
 app.get('/notes', (req, res) => res.sendFile(path.join(__dirname, 'public', 'notes.html')));
 
 // Route for GET /api/notes
-app.get('/api/notes', function(req, res) {
+app.get('/api/notes', function (req, res) {
     // Read db.json file and return all notes
     fs.readFile('db/db.json', 'utf8', function (error, data) {
         if (error) {
@@ -32,7 +32,7 @@ app.get('/api/notes', function(req, res) {
 });
 
 // Route for POST /api/notes
-app.post('/api/notes', function(req, res) {
+app.post('/api/notes', function (req, res) {
     var newNote = req.body;
     // Assign a unique ID for the note
     newNote.id = generateUniqueId();
@@ -45,7 +45,7 @@ app.post('/api/notes', function(req, res) {
             var allNotes = JSON.parse(data);
             allNotes.push(newNote);
             // Write out the notes
-            fs.writeFile('db/db.json', JSON.stringify(allNotes), function(err) {
+            fs.writeFile('db/db.json', JSON.stringify(allNotes), function (err) {
                 if (err) {
                     console.error(err);
                     res.end();
@@ -61,7 +61,6 @@ app.post('/api/notes', function(req, res) {
 // Route for deleting a note
 app.delete('/api/notes/:id', function (req, res) {
     var idOfNoteToDelete = req.params.id;
-    console.log(idOfNoteToDelete);
 
     // Get the notes from the JSON file
     fs.readFile('db/db.json', 'utf8', function (error, data) {
@@ -73,7 +72,7 @@ app.delete('/api/notes/:id', function (req, res) {
             // Filter out the note to be deleted
             allNotes = allNotes.filter(note => note.id !== idOfNoteToDelete);
             // Write out the notes
-            fs.writeFile('db/db.json', JSON.stringify(allNotes), function(err) {
+            fs.writeFile('db/db.json', JSON.stringify(allNotes), function (err) {
                 if (err) {
                     console.error(err);
                 }
