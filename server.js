@@ -58,6 +58,31 @@ app.post('/api/notes', function(req, res) {
     });
 });
 
+// Route for deleting a note
+app.delete('/api/notes/:id', function (req, res) {
+    var idOfNoteToDelete = req.params.id;
+    console.log(idOfNoteToDelete);
+
+    // Get the notes from the JSON file
+    fs.readFile('db/db.json', 'utf8', function (error, data) {
+        if (error) {
+            console.error(error);
+            res.end();
+        } else {
+            var allNotes = JSON.parse(data);
+            // Filter out the note to be deleted
+            allNotes = allNotes.filter(note => note.id !== idOfNoteToDelete);
+            // Write out the notes
+            fs.writeFile('db/db.json', JSON.stringify(allNotes), function(err) {
+                if (err) {
+                    console.error(err);
+                }
+                res.end();
+            });
+        }
+    });
+});
+
 // Fallback route that returns the index.html
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
